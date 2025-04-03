@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  lb:
+    image: nginx:latest
+    ports:
+      - "80:80" 
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - api-network
+
+  api:
+    build: ./api
+    ports: 
+      - "8000"  # Expose API on port 8000
+    networks:
+        - api-network
+
+  api2:
+    build: ./api2
+    ports: 
+      - "8002" # Expose 2nd API port 8002
+    depends_on:
+      - api  # Ensure 1st API started
+    networks:
+        - api-network
+
+  api3:
+    build: ./api3
+    ports: 
+      - "8003" # Expose 3nd API port 8003
+    depends_on:
+      - api  # Ensure 1st API started
+    networks:
+        - api-network
+
+
+networks:
+  api-network:
+    driver: bridge
